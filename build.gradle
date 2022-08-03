@@ -17,10 +17,8 @@ subprojects { project ->
 
     //delete ibm mq temp files
     project.projectDir.listFiles().each { f ->
-        if (f.name.startsWith('mqjms')) {
-            println "Deleting ${f}"
+        if (f.name.startsWith('mqjms'))
             f.delete()
-        }
     }
 
     ext {
