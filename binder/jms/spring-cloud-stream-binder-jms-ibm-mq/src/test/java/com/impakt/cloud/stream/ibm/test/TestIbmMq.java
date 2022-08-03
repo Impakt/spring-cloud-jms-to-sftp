@@ -58,6 +58,7 @@ public class TestIbmMq {
 
     @Test
     @Timeout( 30 )
+    @SuppressWarnings( "BusyWait" )
     void test5MessagesReceived() throws InterruptedException {
         int lastCount = receiveCounter.get();
         while ( receiveCounter.get() <= 5 ) {

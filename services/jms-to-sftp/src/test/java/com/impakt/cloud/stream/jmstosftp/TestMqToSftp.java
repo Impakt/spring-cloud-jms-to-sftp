@@ -3,6 +3,7 @@ package com.impakt.cloud.stream.jmstosftp;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,9 +46,10 @@ public class TestMqToSftp {
 
     private static final AtomicInteger sendCounter = new AtomicInteger( -1 );
 
-    private static final AtomicInteger receiveCounter = new AtomicInteger();
-    private static List<String> fileContents = List.of( "one", "two", "three", "four", "five" );
+    private static final List<String> fileContents = List.of( "one", "two", "three", "four", "five" );
+
     private static String sftpPath;
+
     @Container
     static GenericContainer<?> mqContainer = new GenericContainer<>( DockerImageName.parse( "ibmcom/mq" ) )
             .withEnv( "LICENSE", "accept" )
@@ -71,7 +73,6 @@ public class TestMqToSftp {
     @AfterAll
     static void afterAll() {
         sftpContainer.stop();
-        sendCounter.set( -1 );
     }
 
     @BeforeAll
@@ -86,7 +87,8 @@ public class TestMqToSftp {
 
         users.forEach( u -> {
             File userUploadDir = new File( tempDir, String.format( "%s/upload", u ) );
-            userUploadDir.mkdirs();
+            if ( !userUploadDir.mkdirs() )
+                throw new RuntimeException( "Could not create tmp dir for tests" );
             sftpContainer.withFileSystemBind( userUploadDir.getAbsolutePath(), String.format( "/home/%s/upload", u ) );
 
             File sshPublicKey = new File( sftpPath, String.format( "%s-id-rsa.pub", u ) );
@@ -100,30 +102,25 @@ public class TestMqToSftp {
     }
 
     @Test
-    @Timeout( 300000000 )
-    void test5FilesReceived() {
+    @Timeout( 15 )
+    void test5FilesReceived() throws IOException {
         boolean worked = false;
         while ( !worked ) {
-            try {
-                Thread.sleep( 100 );
-                for ( String user : users ) {
-                    File userUploadDir = new File( tempDir, String.format( "%s/upload", user ) );
-                    assertTrue( userUploadDir.exists() );
-                    for ( String expectedFileContents : fileContents ) {
-                        File tempFile = new File( userUploadDir,
-                                String.format( "FOO.QUEUE-%s.txt",
-                                        expectedFileContents.toUpperCase( Locale.ROOT ) ) );
-                        if ( !tempFile.exists() )
-                            throw new RuntimeException();
+            worked = true;
+            for ( String user : users ) {
+                File userUploadDir = new File( tempDir, String.format( "%s/upload", user ) );
+                assertTrue( userUploadDir.exists() );
+                for ( String expectedFileContents : fileContents ) {
+                    File tempFile = new File( userUploadDir, String.format( "FOO.QUEUE-%s.txt",
+                            expectedFileContents.toUpperCase( Locale.ROOT ) ) );
+                    if ( !tempFile.exists() )
+                        worked = false;
+                    else {
                         String actualFileContent = FileUtils.readFileToString( tempFile, "UTF-8" );
                         if ( !expectedFileContents.toUpperCase().equals( actualFileContent ) )
-                            throw new RuntimeException();
+                            worked = false;
                     }
                 }
-                worked = true;
-            } catch ( Throwable ex ) {
-                if ( !( ex instanceof RuntimeException ) )
-                    ex.printStackTrace();
             }
         }
     }

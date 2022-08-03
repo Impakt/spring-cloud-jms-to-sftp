@@ -6,6 +6,7 @@ import static com.impakt.cloud.stream.jms.utils.JmsBinderUtils.sanitiseDestinati
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.jms.BytesMessage;
@@ -46,10 +47,11 @@ import com.impakt.cloud.stream.jms.provisioning.JmsProvisioningProvider;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class JmsMessageChannelBinder extends
-                                     AbstractMessageChannelBinder<ExtendedConsumerProperties<JmsConsumerProperties>,
-                                                                         ExtendedProducerProperties<JmsProducerProperties>, JmsProvisioningProvider> implements
-                                                                                                                                                     ExtendedPropertiesBinder<MessageChannel, JmsConsumerProperties, JmsProducerProperties> {
+public class JmsMessageChannelBinder
+        extends AbstractMessageChannelBinder<ExtendedConsumerProperties<JmsConsumerProperties>,
+                                                    ExtendedProducerProperties<JmsProducerProperties>,
+                                                    JmsProvisioningProvider>
+        implements ExtendedPropertiesBinder<MessageChannel, JmsConsumerProperties, JmsProducerProperties> {
 
     private final ConnectionFactory connectionFactory;
 
@@ -60,10 +62,8 @@ public class JmsMessageChannelBinder extends
                                     JmsProvisioningProvider provisioningProvider ) {
         super( new String[0], provisioningProvider );
         this.connectionFactory = connectionFactory;
-        if ( jmsExtendedBindingProperties != null )
-            this.jmsExtendedBindingProperties = jmsExtendedBindingProperties;
-        else
-            this.jmsExtendedBindingProperties = new JmsExtendedBindingProperties();
+        this.jmsExtendedBindingProperties = Objects
+                .requireNonNullElseGet( jmsExtendedBindingProperties, JmsExtendedBindingProperties::new );
     }
 
     @Override
@@ -187,7 +187,7 @@ public class JmsMessageChannelBinder extends
                 else
                     headers.put( "destinationName",
                             ( (Topic) jmsMessage.getJMSDestination() ).getTopicName() );
-                Enumeration jmsMessageHeadersEnumeration = jmsMessage.getPropertyNames();
+                Enumeration<?> jmsMessageHeadersEnumeration = jmsMessage.getPropertyNames();
                 while ( jmsMessageHeadersEnumeration.hasMoreElements() ) {
                     String name = (String) jmsMessageHeadersEnumeration.nextElement();
                     Object o = jmsMessage.getObjectProperty( name );

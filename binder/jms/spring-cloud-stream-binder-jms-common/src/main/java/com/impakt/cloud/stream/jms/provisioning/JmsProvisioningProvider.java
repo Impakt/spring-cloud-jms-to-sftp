@@ -23,7 +23,7 @@ public class JmsProvisioningProvider implements
                                      ProvisioningProvider<ExtendedConsumerProperties<JmsConsumerProperties>,
                                                                  ExtendedProducerProperties<JmsProducerProperties>> {
 
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
 
     public JmsProvisioningProvider( ConnectionFactory connectionFactory ) {
         this.connectionFactory = connectionFactory;

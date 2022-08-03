@@ -58,8 +58,6 @@ public class JmsBinderUtils {
 
     private static class NeverRetryContext extends RetryContextSupport {
 
-        private boolean finished = false;
-
         public NeverRetryContext() {
             super( null );
         }

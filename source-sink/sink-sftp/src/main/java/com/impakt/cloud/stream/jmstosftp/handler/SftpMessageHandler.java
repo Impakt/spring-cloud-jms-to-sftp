@@ -38,10 +38,16 @@ public class SftpMessageHandler implements DisposableBean {
     }
 
     @Override
-    public void destroy() throws Exception {
-        for ( Object v : handlerMap.values() )
-            if ( v instanceof DisposableBean )
-                ( (DisposableBean) v ).destroy();
+    public void destroy() {
+        for ( Object v : handlerMap.values() ) {
+            if ( v instanceof DisposableBean ) {
+                try {
+                    ( (DisposableBean) v ).destroy();
+                } catch ( Exception exception ) {
+                    // no op
+                }
+            }
+        }
         handlerMap.clear();
     }
 

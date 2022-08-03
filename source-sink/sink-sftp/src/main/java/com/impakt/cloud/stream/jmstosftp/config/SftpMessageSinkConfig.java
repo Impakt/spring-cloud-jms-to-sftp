@@ -26,11 +26,13 @@ public class SftpMessageSinkConfig {
         return sftpMessageHandler::handleMessage;
     }
 
-/*    @Bean
+    /*
+    @Bean
     public Function<Message<?>, Message<?>> toSftpFunction( SftpMessageHandler sftpMessageHandler ) {
         return message -> {
             sftpMessageHandler.handleMessage( message );
             return message;
         };
-    }*/
+    }
+    */
 }

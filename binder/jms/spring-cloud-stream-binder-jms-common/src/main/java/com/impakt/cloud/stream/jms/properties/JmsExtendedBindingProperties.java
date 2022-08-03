@@ -29,14 +29,14 @@ import org.springframework.cloud.stream.binder.ExtendedBindingProperties;
  * @author Oleg Zhurakousky
  */
 @ConfigurationProperties( "spring.cloud.stream.jms" )
-public class JmsExtendedBindingProperties implements
-                                          ExtendedBindingProperties<JmsConsumerProperties, JmsProducerProperties> {
+public class JmsExtendedBindingProperties
+        implements ExtendedBindingProperties<JmsConsumerProperties, JmsProducerProperties> {
 
     private static final String DEFAULTS_PREFIX = "spring.cloud.stream.jms.default";
 
-    private RetryProperties retry = new RetryProperties();
+    private final RetryProperties retry = new RetryProperties();
 
-    private Map<String, JmsBindingProperties> bindings = new HashMap<>();
+    private final Map<String, JmsBindingProperties> bindings = new HashMap<>();
 
     public Map<String, JmsBindingProperties> getBindings() {
         return bindings;
