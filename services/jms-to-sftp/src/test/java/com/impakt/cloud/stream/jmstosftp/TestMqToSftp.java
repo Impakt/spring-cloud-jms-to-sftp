@@ -15,7 +15,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,6 +30,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -58,7 +58,7 @@ public class TestMqToSftp {
             .withExposedPorts( 1414 )
             .withLogConsumer( new Slf4jLogConsumer( log ) );
     static GenericContainer<?> sftpContainer;
-    @TempDir
+
     static File tempDir;
 
     static List<String> users = List.of( "foo", "bar", "dak" );
@@ -77,6 +77,7 @@ public class TestMqToSftp {
 
     @BeforeAll
     static void beforeAll() throws Exception {
+        tempDir = Files.createTempDir();
         sftpPath = ResourceUtils.getFile( "classpath:sftp" ).getAbsolutePath();
         sftpContainer = new GenericContainer<>( DockerImageName.parse( "atmoz/sftp" ) )
                 .withExposedPorts( 22 )

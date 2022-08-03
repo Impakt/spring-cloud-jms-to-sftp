@@ -1,10 +1,12 @@
 package com.impakt.cloud.stream.ibm.test;
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -34,8 +36,10 @@ public class TestIbmMq {
 
     private static final AtomicInteger receiveCounter = new AtomicInteger();
 
-    static String mqscPath = Thread.currentThread().getContextClassLoader().getResource( "mqsc/10-config.mqsc" )
-            .toString().replace( "file:", "" );
+    static String mqscPath = Thread.currentThread().getContextClassLoader()
+            .getResource( "mqsc/10-config.mqsc" ).toString()
+            .replace( SystemUtils.OS_NAME.toLowerCase( Locale.ROOT ).contains( "win" ) ? "file:/" : "file:", "" );
+
     @Container
     static GenericContainer<?> mqContainer = new GenericContainer<>( DockerImageName.parse( "ibmcom/mq" ) )
             .withEnv( "LICENSE", "accept" )
@@ -43,6 +47,7 @@ public class TestIbmMq {
             .withCopyFileToContainer( MountableFile.forHostPath( mqscPath ), "/etc/mqm/" )
             .withExposedPorts( 1414 )
             .withLogConsumer( new Slf4jLogConsumer( logger ) );
+
     @Autowired
     public Consumer<String> consumer;
 
