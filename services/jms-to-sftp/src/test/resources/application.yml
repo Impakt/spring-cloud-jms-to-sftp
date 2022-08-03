@@ -1,0 +1,68 @@
+spring:
+  main:
+    banner-mode: off
+  cloud:
+    stream:
+      function:
+        definition: supplier;upperCaseFunction;toSftpConsumer
+      bindings:
+        supplier-out-0:
+          destination: FOO.QUEUE
+        upperCaseFunction-in-0:
+          destination: FOO.QUEUE
+        upperCaseFunction-out-0:
+          destination: BAR.QUEUE
+        toSftpConsumer-in-0:
+          destination: BAR.QUEUE
+      binders:
+        ibm-mq1:
+          type: ibm-mq
+          environment:
+            ibm:
+              mq:
+                application-name: ibmmq1
+                conn-name: localhost(${test-mq-port})
+      sink:
+        sftp:
+          bindings:
+            "[queue:///FOO.QUEUE]":
+              foo:
+                host: localhost
+                port: ${test-sftp-port}
+                user: foo
+                remote-location: >
+                  '/upload/' 
+                  + destinationName.replace('queue:///', '') 
+                  + '-' 
+                  + message.getPayload()
+                  + '.txt'
+                user-info:
+                  password: foopassword
+                  prompt-yes-no: true
+              bar:
+                host: localhost
+                port: ${test-sftp-port}
+                user: bar
+                private-key: ${test-sftp-path}/bar-id-rsa
+                remote-location: >
+                  '/upload/' 
+                  + destinationName.replace('queue:///', '') 
+                  + '-' 
+                  + message.getPayload()
+                  + '.txt'
+                user-info:
+                  prompt-yes-no: true
+              dak:
+                host: localhost
+                port: ${test-sftp-port}
+                user: dak
+                private-key: ${test-sftp-path}/dak-id-rsa
+                remote-location: >
+                  '/upload/' 
+                  + destinationName.replace('queue:///', '') 
+                  + '-' 
+                  + message.getPayload()
+                  + '.txt'
+                user-info:
+                  prompt-yes-no: true
+                  passphrase: password

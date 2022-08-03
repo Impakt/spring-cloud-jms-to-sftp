@@ -1,0 +1,6 @@
+rootProject.name = 'spring-cloud-jms-to-sftp'
+
+include 'binder:jms:spring-cloud-stream-binder-jms-common'
+include 'binder:jms:spring-cloud-stream-binder-jms-ibm-mq'
+include 'source-sink:sink-sftp'
+include 'services:jms-to-sftp'

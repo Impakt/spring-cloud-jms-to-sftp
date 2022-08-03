@@ -1,0 +1,2 @@
+ibm-mq:\
+com.impakt.cloud.stream.ibm.config.IbmMqConfiguration

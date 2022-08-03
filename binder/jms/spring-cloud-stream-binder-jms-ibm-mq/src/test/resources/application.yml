@@ -1,0 +1,43 @@
+spring:
+  main:
+    banner-mode: off
+  cloud:
+    stream:
+      default-binder: ibm-mq1
+      function:
+        definition: supplier;consumer
+      bindings:
+        supplier-out-0:
+          destination: FOO.QUEUE
+        consumer-in-0:
+          destination: FOO.QUEUE
+      binders:
+        ibm-mq1:
+          type: ibm-mq
+          environment:
+            ibm:
+              mq:
+                application-name: ibmmq1
+                conn-name: localhost(${test-mq-port})
+        ibm-mq2:
+          type: ibm-mq
+          environment:
+            ibm:
+              mq:
+                application-name: ibmmq2
+                conn-name: localhost(${test-mq-port})
+      jms:
+        retry:
+          enabled: false
+          retry-max-attempts: 123
+        bindings:
+          transform-in-0:
+            type: QUEUE
+            retry:
+              enabled: false
+              retry-max-attempts: 456
+          transform-out-0:
+            type: TOPIC
+            retry:
+              enabled: false
+              retry-max-attempts: 789

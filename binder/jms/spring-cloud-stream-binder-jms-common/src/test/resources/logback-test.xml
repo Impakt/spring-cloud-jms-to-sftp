@@ -1,0 +1,14 @@
+<configuration debug="false" scan="true">
+
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT" target="System.out">
+        <encoder>
+            <pattern>%-5level %date{HH:mm:ss,SSS} %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

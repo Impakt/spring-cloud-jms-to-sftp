@@ -1,0 +1,11 @@
+<configuration>
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT" target="System.out">
+        <encoder>
+            <pattern>%d{HH:mm:ss,SSS} [%.8thread] %logger{10} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger level="trace" name="com.impakt"/>
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
